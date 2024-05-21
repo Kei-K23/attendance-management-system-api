@@ -6,24 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(value = "users")
+@Document(value = "departments")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class Department {
     @Id
     private String id;
-    private String name;
     @Indexed(unique = true)
-    private String email;
-    private String password;
-    private String phone;
-    @DBRef
-    private Department departmentId;
-    @DBRef
-    private Role roleId;
+    private String name;
+    private String description;
 }
+
