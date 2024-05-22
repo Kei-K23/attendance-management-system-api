@@ -1,8 +1,5 @@
 package dev.kei.dto;
 
-import dev.kei.entity.Department;
-import dev.kei.entity.Role;
-import dev.kei.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,11 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserRequestDto {
+public class LoginRequestDto {
     private String name;
-    private String email;
     private String password;
-    private String phone;
-    private String departmentId;
-    private String roleId;
 }

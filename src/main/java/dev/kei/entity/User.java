@@ -17,13 +17,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
     @Id
     private String id;
-    private String name;
     @Indexed(unique = true)
+    private String name;
     private String email;
     private String password;
     private String phone;
-    @DBRef
-    private Department departmentId;
-    @DBRef
-    private Role roleId;
+    private String departmentId;
+    private String roleId;
 }
