@@ -1,10 +1,10 @@
 package dev.kei.service;
 
-import dev.kei.config.EnvConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -14,11 +14,8 @@ import java.util.Map;
 
 @Service
 public class JwtService {
-    private final String secretKey;
-
-    public JwtService(EnvConfig envConfig) {
-        this.secretKey = envConfig.getSecretKey();
-    }
+    @Value("${app.secretKey}")
+    private String secretKey;
 
     public void validateToken(String token) {
         Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
@@ -40,7 +37,6 @@ public class JwtService {
     }
 
     private Key getSignKey() {
-        System.out.println("KEY :" + secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
