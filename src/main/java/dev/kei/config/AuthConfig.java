@@ -33,7 +33,10 @@ public class AuthConfig {
         httpSecurity.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                         "/api/v1/auth/register",
-                        "/api/v1/auth/login")
+                        "/api/v1/auth/login",
+                        "/api/v1/departments",
+                        "/api/v1/roles"
+                )
                 .permitAll()
                 .anyRequest()
                 .authenticated()

@@ -25,7 +25,6 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> me(@RequestHeader(HttpHeaders.AUTHORIZATION) String authToken) {
-        System.out.println(authToken);
         String token = authToken.substring(7);
         return ResponseEntity.status(HttpStatus.OK).body(userService.me(token));
     }
