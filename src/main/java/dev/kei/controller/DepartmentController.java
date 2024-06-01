@@ -3,6 +3,7 @@ package dev.kei.controller;
 import dev.kei.dto.DepartmentRequestDto;
 import dev.kei.dto.DepartmentResponseDto;
 import dev.kei.service.DepartmentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<DepartmentResponseDto> save(@RequestBody DepartmentRequestDto departmentRequestDto) {
+    public ResponseEntity<DepartmentResponseDto> save(@Valid @RequestBody DepartmentRequestDto departmentRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(departmentService.save(departmentRequestDto));
     }
 
@@ -34,7 +35,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentResponseDto> update(@PathVariable String id, @RequestBody DepartmentRequestDto departmentRequestDto) {
+    public ResponseEntity<DepartmentResponseDto> update(@PathVariable String id, @Valid @RequestBody DepartmentRequestDto departmentRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(departmentService.update(id, departmentRequestDto));
     }
 

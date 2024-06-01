@@ -3,6 +3,7 @@ package dev.kei.controller;
 import dev.kei.dto.RoleRequestDto;
 import dev.kei.dto.RoleResponseDto;
 import dev.kei.service.RoleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<RoleResponseDto> save(@RequestBody RoleRequestDto roleRequestDto) {
+    public ResponseEntity<RoleResponseDto> save(@Valid @RequestBody RoleRequestDto roleRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.save(roleRequestDto));
     }
 
@@ -34,7 +35,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoleResponseDto> update(@PathVariable String id, @RequestBody RoleRequestDto roleRequestDto) {
+    public ResponseEntity<RoleResponseDto> update(@PathVariable String id,@Valid @RequestBody RoleRequestDto roleRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(roleService.update(roleRequestDto, id));
     }
 

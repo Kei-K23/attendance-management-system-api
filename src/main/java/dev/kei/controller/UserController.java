@@ -3,6 +3,7 @@ package dev.kei.controller;
 import dev.kei.dto.UserRequestDto;
 import dev.kei.dto.UserResponseDto;
 import dev.kei.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> update(@PathVariable String id, @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<UserResponseDto> update(@PathVariable String id,@Valid @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(id, userRequestDto));
     }
 

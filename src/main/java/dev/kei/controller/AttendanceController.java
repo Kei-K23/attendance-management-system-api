@@ -3,6 +3,7 @@ package dev.kei.controller;
 import dev.kei.dto.AttendanceRequestDto;
 import dev.kei.entity.Attendance;
 import dev.kei.service.AttendanceService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +20,13 @@ public class AttendanceController {
     }
 
     @PostMapping("/check-in")
-    public ResponseEntity<Void> clockIn(@RequestBody AttendanceRequestDto attendanceRequestDto) {
+    public ResponseEntity<Void> clockIn(@Valid @RequestBody AttendanceRequestDto attendanceRequestDto) {
         attendanceService.clockIn(attendanceRequestDto);
         return  ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PostMapping("/check-out")
-    public ResponseEntity<Void> clockOut(@RequestBody AttendanceRequestDto attendanceRequestDto) {
+    public ResponseEntity<Void> clockOut(@Valid @RequestBody AttendanceRequestDto attendanceRequestDto) {
         attendanceService.clockOut(attendanceRequestDto);
         return  ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

@@ -7,6 +7,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,6 +23,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CustomErrorResponseDto.builder()
                 .status("INTERNAL-SERVER-ERROR")
                 .code(500)
+                .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CustomErrorResponseDto> handleValidationException(MethodArgumentNotValidException ex) {
+        log.info("GlobalExceptionHandler::handleValidationException exception caught: {} ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CustomErrorResponseDto.builder()
+                .status("BAD-REQUEST")
+                .code(400)
                 .message(ex.getMessage())
                 .build());
     }

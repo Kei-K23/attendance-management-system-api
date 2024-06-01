@@ -5,6 +5,7 @@ import dev.kei.dto.LoginResponseDto;
 import dev.kei.dto.UserRequestDto;
 import dev.kei.dto.UserResponseDto;
 import dev.kei.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,12 +23,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(userRequestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginRequestDto));
     }
 }
