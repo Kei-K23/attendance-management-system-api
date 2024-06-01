@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomErrorResponseDto> handleMissingAuthHeaderException(MissingAuthHeaderException ex) {
         log.info("GlobalExceptionHandler::handleMissingAuthHeaderException exception caught: {} ", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomErrorResponseDto.builder()
-                .status("MISSING-AUTH-TOKEN")
+                .status("UNAUTHORIZED-ACCESS")
                 .code(401)
                 .message(ex.getMessage())
                 .build());

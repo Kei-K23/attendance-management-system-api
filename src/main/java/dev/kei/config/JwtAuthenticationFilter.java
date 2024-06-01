@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -39,70 +40,69 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getRequestURI().equals("/api/v1/auth/register")
-                || request.getRequestURI().equals("/api/v1/auth/login")) {
+        if (isUnprotectedEndpoint(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader("Authorization");
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            handlerExceptionResolver.resolveException(request, response, null, new MissingAuthHeaderException("Missing authorization header"));
+            handleException(request, response, new MissingAuthHeaderException("Missing authorization header"));
             return;
         }
 
+        final String jwt = authHeader.substring(7);
         try {
-            final String jwt = authHeader.substring(7);
-            final String username = jwtService.extractUsername(jwt);
-            if (username != null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                // Extract the role to validate role-based authentication
-                Claims claims = jwtService.extractAllClaims(jwt);
-                String roleId = claims.get("roleId").toString();
-                RoleResponseDto role = roleService.findById(roleId);
-                String permission = role.getPermissions();
-
-                if (!validateRouteForRoleBasedAuthentication(request.getRequestURI(), request.getMethod(), permission)) {
-                    handlerExceptionResolver.resolveException(request, response, null, new MissingAuthHeaderException("Unauthorized access!"));
-                    return;
-                }
-
-                if (jwtService.validateToken(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
+            String username = jwtService.extractUsername(jwt);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                processAuthentication(request, response, filterChain, jwt, username);
+            } else {
+                filterChain.doFilter(request, response);
             }
-            filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            handlerExceptionResolver.resolveException(request, response, null, ex);
+            handleException(request, response, ex);
         }
     }
 
+    private boolean isUnprotectedEndpoint(HttpServletRequest request) {
+        List<String> unprotectedEndpoints = List.of("/api/v1/auth/register", "/api/v1/auth/login");
+        return unprotectedEndpoints.contains(request.getRequestURI());
+    }
+
+    private void processAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String jwt, String username) throws IOException, ServletException {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        Claims claims = jwtService.extractAllClaims(jwt);
+        String roleId = claims.get("roleId", String.class);
+        RoleResponseDto role = roleService.findById(roleId);
+
+        if (!validateRouteForRoleBasedAuthentication(request.getRequestURI(), request.getMethod(), role.getPermissions())) {
+            handleException(request, response, new MissingAuthHeaderException("Unauthorized access!"));
+            return;
+        }
+
+        if (jwtService.validateToken(jwt, userDetails)) {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception ex) throws IOException, ServletException {
+        handlerExceptionResolver.resolveException(request, response, null, ex);
+    }
+
     private boolean validateRouteForRoleBasedAuthentication(String route, String method, String permissions) {
-        if (route.startsWith("/api/v1/roles")) {
-            if (!permissions.equals("ALL")) {
-                return method.equals("GET");
-            }
+        if (permissions.equals("ALL")) {
+            return true;
         }
 
-        if (route.startsWith("/api/v1/departments")) {
-            if (!permissions.equals("ALL")) {
-                return method.equals("GET");
-            }
-        }
-
-        if (route.startsWith("/api/v1/users")) {
-            if (!permissions.equals("ALL")) {
-                return method.equals("GET");
-            }
-        }
-
-        if (route.startsWith("/api/v1/attendance")) {
-            if (!permissions.equals("ALL")) {
-                return method.equals("GET");
+        List<String> protectedRoutes = List.of("/api/v1/roles", "/api/v1/departments", "/api/v1/users", "/api/v1/attendance");
+        for (String protectedRoute : protectedRoutes) {
+            if (route.startsWith(protectedRoute) && !method.equals("GET")) {
+                return false;
             }
         }
 
