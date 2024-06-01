@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AttendanceService {
@@ -91,17 +90,12 @@ public class AttendanceService {
         } catch (NotFoundException notFoundException) {
             throw new NotFoundException(notFoundException.getMessage());
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             throw new RuntimeException(ex.getMessage());
         }
     }
 
     @Transactional(readOnly = true)
     private List<Attendance> findByUserId(String userId) {
-        try {
-            return attendanceRepository.findByUserId(userId);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
+        return attendanceRepository.findByUserId(userId);
     }
 }

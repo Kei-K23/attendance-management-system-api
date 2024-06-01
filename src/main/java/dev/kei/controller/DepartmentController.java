@@ -27,4 +27,20 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentResponseDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(departmentService.findAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DepartmentResponseDto> findById(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(departmentService.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DepartmentResponseDto> update(@PathVariable String id, @RequestBody DepartmentRequestDto departmentRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(departmentService.update(id, departmentRequestDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        departmentService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }
