@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -30,6 +32,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(CustomErrorResponseDto.builder()
                 .status("ALREADY-CHECK-IN")
                 .code(400)
+                .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<CustomErrorResponseDto> handleNoSuchElementException(NoSuchElementException ex) {
+        log.info("GlobalExceptionHandler::handleNoSuchElementException exception caught: {} ", ex.getMessage());
+        return ResponseEntity.status(404).body(CustomErrorResponseDto.builder()
+                .status("NOT_FOUND_ELEMENT")
+                .code(404)
                 .message(ex.getMessage())
                 .build());
     }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class RoleService {
@@ -29,13 +31,38 @@ public class RoleService {
         }
     }
 
+    @Transactional
+    public RoleResponseDto update(RoleRequestDto roleRequestDto, String id) {
+        Optional<Role> existingRole = roleRepository.findById(id);
+        if(existingRole.isEmpty()) {
+            throw new NoSuchElementException("Role id " + id + " does not exist to update");
+        }
+
+        Role role = roleRequestDto.toRole(roleRequestDto);
+        role.setId(existingRole.get().getId());
+        roleRepository.save(role);
+
+        RoleResponseDto roleResponseDto = new RoleResponseDto();
+        return roleResponseDto.fromRole(role);
+    }
+
+    @Transactional
+    public void delete(String id) {
+        Optional<Role> existingRole = roleRepository.findById(id);
+        if(existingRole.isEmpty()) {
+            throw new NoSuchElementException("Role id " + id + " does not exist to delete");
+        }
+        roleRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<RoleResponseDto> findAll() {
-        try {
-            return roleRepository.findAll().stream().map(this::mapTo).toList();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
+        return roleRepository.findAll().stream().map(this::mapTo).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RoleResponseDto findById(String id) {
+        return mapTo(roleRepository.findById(id).get());
     }
 
     private RoleResponseDto mapTo(Role role) {
