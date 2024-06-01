@@ -21,4 +21,5 @@ public class Attendance {
     private LocalDateTime clockInTime;
     private LocalDateTime clockOutTime;
     private Boolean present;
+    private String status;
 }

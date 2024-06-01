@@ -2,6 +2,7 @@ package dev.kei.config;
 
 import dev.kei.exception.MissingAuthHeaderException;
 import dev.kei.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String authHeader = request.getHeader("Authorization");
+        System.out.println(authHeader);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             handlerExceptionResolver.resolveException(request, response, null, new MissingAuthHeaderException("Missing authorization header"));
             return;
@@ -48,17 +51,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
             final String username = jwtService.extractUsername(jwt);
-
             if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
+                System.out.println("Here");
                 if (jwtService.validateToken(jwt, userDetails)) {
+                    System.out.println("Here not");
+
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
             handlerExceptionResolver.resolveException(request, response, null, ex);

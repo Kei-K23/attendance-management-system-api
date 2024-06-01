@@ -17,4 +17,5 @@ public class AttendanceResponseDto {
     private LocalDateTime clockInTime;
     private LocalDateTime clockOutTime;
     private Boolean present;
+    private String status;
 }
