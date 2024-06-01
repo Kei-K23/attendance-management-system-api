@@ -23,7 +23,7 @@ public class AttendanceController {
 
     @PostMapping("/check-out")
     public ResponseEntity<Void> clockOut(@RequestBody AttendanceRequestDto attendanceRequestDto) {
-        attendanceService.clockIn(attendanceRequestDto);
+        attendanceService.clockOut(attendanceRequestDto);
         return  ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 }

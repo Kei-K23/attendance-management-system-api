@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<CustomErrorResponseDto> handleRuntimeException(MissingAuthHeaderException ex) {
+    public ResponseEntity<CustomErrorResponseDto> handleRuntimeException(RuntimeException ex) {
         log.info("GlobalExceptionHandler::handleRuntimeException exception caught: {} ", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomErrorResponseDto.builder()
-                .status("SERVER-ERROR")
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CustomErrorResponseDto.builder()
+                .status("INTERNAL-SERVER-ERROR")
                 .code(500)
                 .message(ex.getMessage())
                 .build());
