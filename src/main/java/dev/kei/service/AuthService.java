@@ -48,7 +48,7 @@ public class AuthService {
             throw new RuntimeException("Password is incorrect");
         }
 
-        String token = jwtService.generateToken(loginRequestDto.getName());
+        String token = jwtService.generateToken(loginRequestDto.getName(), user.get().getRoleId());
         return LoginResponseDto.builder().accessToken(token).build();
     }
 }

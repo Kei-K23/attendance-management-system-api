@@ -38,8 +38,9 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String roleId) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("roleId", roleId);
         return createToken(claims, username);
     }
 
@@ -62,7 +63,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignKey())
@@ -70,5 +71,4 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 }
