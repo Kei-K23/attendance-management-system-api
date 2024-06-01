@@ -1,13 +1,15 @@
 package dev.kei.service;
 
+import dev.kei.dto.UserRequestDto;
 import dev.kei.dto.UserResponseDto;
 import dev.kei.entity.User;
 import dev.kei.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,9 +24,40 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDto findById(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id " + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found with id " + id));
         UserResponseDto userResponseDto = new UserResponseDto();
         return userResponseDto.fromUser(user);
+    }
+
+    @Transactional
+    public UserResponseDto update(String id, UserRequestDto userRequestDto) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new NoSuchElementException("User id " + id + " does not exist to update");
+        }
+
+        User updatedUser = User.builder()
+                .id(user.get().getId())
+                .name(userRequestDto.getName())
+                .email(userRequestDto.getEmail())
+                .phone(userRequestDto.getPhone())
+                .password(user.get().getPassword())
+                .departmentId(userRequestDto.getDepartmentId())
+                .roleId(userRequestDto.getRoleId())
+                .build();
+        userRepository.save(updatedUser);
+
+        UserResponseDto userResponseDto = new UserResponseDto();
+        return userResponseDto.fromUser(updatedUser);
+    }
+
+    @Transactional
+    public void delete(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new NoSuchElementException("User id " + id + " does not exist to delete");
+        }
+        userRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)

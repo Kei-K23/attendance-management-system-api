@@ -1,5 +1,6 @@
 package dev.kei.controller;
 
+import dev.kei.dto.UserRequestDto;
 import dev.kei.dto.UserResponseDto;
 import dev.kei.service.UserService;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,22 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> findById(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDto> update(@PathVariable String id, @RequestBody UserRequestDto userRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(id, userRequestDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        userService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/me")
